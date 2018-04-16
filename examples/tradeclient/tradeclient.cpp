@@ -35,6 +35,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include "quickfix/FileLog.h"
 
 #include "../../src/getopt-repl.h"
 
@@ -63,7 +64,10 @@ int main( int argc, char** argv )
 
     Application application;
     FIX::FileStoreFactory storeFactory( settings );
-    FIX::ScreenLogFactory logFactory( settings );
+    //FIX::ScreenLogFactory logFactory( settings );
+	//FIX::FileLogFactory logFactory(true, true, true);
+	FIX::FileLogFactory logFactory(settings);
+
 #ifdef HAVE_SSL
     if (isSSL.compare("SSL") == 0)
       initiator = new FIX::ThreadedSSLSocketInitiator ( application, storeFactory, settings, logFactory );
@@ -72,12 +76,14 @@ int main( int argc, char** argv )
     else
 #endif
     initiator = new FIX::SocketInitiator( application, storeFactory, settings, logFactory );
+	
 
     initiator->start();
     application.run();
     initiator->stop();
     delete initiator;
 
+	std::cin.get();
     return 0;
   }
   catch ( std::exception & e )
